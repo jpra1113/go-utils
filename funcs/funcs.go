@@ -8,7 +8,7 @@ import (
 func LoopUntil(timeout time.Duration, stepTime time.Duration, loopFunc func() (bool, error)) error {
 	doneChan := make(chan bool, 1)
 	errChan := make(chan error, 1)
-	quitChan := make(chan bool)
+	quitChan := make(chan bool, 1)
 
 	go func() {
 		for {
