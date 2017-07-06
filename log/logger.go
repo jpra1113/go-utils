@@ -24,21 +24,21 @@ type LoggerConfig interface {
 
 // NewLogger creates a named log under the files path
 func NewLogger(filesPath string, name string) (*FileLog, error) {
-	log := logging.MustGetLogger(deploymentName)
+	log := logging.MustGetLogger(name)
 
 	logDirPath := path.Join(filesPath, "log")
 	if _, err := os.Stat(logDirPath); os.IsNotExist(err) {
 		os.Mkdir(logDirPath, 0777)
 	}
 
-	logFilePath := path.Join(logDirPath, deploymentName+".log")
+	logFilePath := path.Join(logDirPath, name+".log")
 	logFile, err := os.OpenFile(logFilePath, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0666)
 	if err != nil {
-		return nil, errors.New("Unable to create deployment log file:" + err.Error())
+		return nil, errors.New("Unable to create log file:" + err.Error())
 	}
 
-	fileLog := logging.NewLogBackend(logFile, "["+deploymentName+"]", 0)
-	consoleLog := logging.NewLogBackend(os.Stdout, "["+deploymentName+"]", 0)
+	fileLog := logging.NewLogBackend(logFile, "["+name+"]", 0)
+	consoleLog := logging.NewLogBackend(os.Stdout, "["+name+"]", 0)
 
 	fileLogLevel := logging.AddModuleLevel(fileLog)
 	fileLogLevel.SetLevel(logging.INFO, "")
