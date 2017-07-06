@@ -6,24 +6,27 @@ import (
 	"path"
 
 	logging "github.com/op/go-logging"
-	"github.com/spf13/viper"
 )
 
 var logFormatter = logging.MustStringFormatter(
 	` %{level:.1s}%{time:0102 15:04:05.999999} %{pid} %{shortfile}] %{message}`,
 )
 
-type DeploymentLog struct {
+type FileLog struct {
 	Name    string
 	Logger  *logging.Logger
 	LogFile *os.File
 }
 
-// NewLogger create per deployment logger
-func NewLogger(config *viper.Viper, deploymentName string) (*DeploymentLog, error) {
+type LoggerConfig interface {
+	GetString(key string) string
+}
+
+// NewLogger creates a named log under the files path
+func NewLogger(filesPath string, name string) (*FileLog, error) {
 	log := logging.MustGetLogger(deploymentName)
 
-	logDirPath := path.Join(config.GetString("filesPath"), "log")
+	logDirPath := path.Join(filesPath, "log")
 	if _, err := os.Stat(logDirPath); os.IsNotExist(err) {
 		os.Mkdir(logDirPath, 0777)
 	}
@@ -45,8 +48,8 @@ func NewLogger(config *viper.Viper, deploymentName string) (*DeploymentLog, erro
 
 	log.SetBackend(logging.SetBackend(fileLogBackend, consoleLogBackend))
 
-	return &DeploymentLog{
-		Name:    deploymentName,
+	return &FileLog{
+		Name:    name,
 		Logger:  log,
 		LogFile: logFile,
 	}, nil
