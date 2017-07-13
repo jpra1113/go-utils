@@ -1,0 +1,4 @@
+package: github.com/hyperpilotio/go-utils
+import:
+- package: github.com/op/go-logging
+- package: github.com/spf13/viper
