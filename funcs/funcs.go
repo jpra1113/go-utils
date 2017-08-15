@@ -1,7 +1,9 @@
 package funcs
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -38,4 +40,22 @@ func LoopUntil(timeout time.Duration, stepTime time.Duration, loopFunc func() (b
 		quitChan <- true
 		return errors.New("Time out waiting for loop to terminate")
 	}
+}
+
+func DeepCopy(from interface{}, to interface{}) error {
+	if from == nil {
+		return errors.New("Unable to find 'from' interface")
+	}
+	if to == nil {
+		return errors.New("Unable to find 'to' interface")
+	}
+	bytes, err := json.Marshal(from)
+	if err != nil {
+		return fmt.Errorf("Unable to marshal src: %s", err)
+	}
+	err = json.Unmarshal(bytes, to)
+	if err != nil {
+		return fmt.Errorf("Unable to unmarshal into dst: %s", err)
+	}
+	return nil
 }
